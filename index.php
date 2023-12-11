@@ -10,30 +10,55 @@
     <link href="View/CSS/mainSection.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<?php
-?>
-   
-    <?php
-    
-    require_once './Model/Connection.php';
-        $pdoBuilder = new Connection();
-        $db = $pdoBuilder->getDb();
-        if (( isset($_GET['ctrl']) && !empty($_GET['ctrl']) ) && ( isset($_GET['action']) && !empty($_GET['action']) )) {
-            $ctrl = $_GET['ctrl'];
-            $action = $_GET['action'];
+        <form action="" method="post">
+        <select name="year" id="year">
+            <?php
+                for ($i = 2014; $i <= 2020; $i++) {
+                    $selected = ($i == $year) ? 'selected' : '';
+                    echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+                }
+                ?>
+            </select>
+            <input type="submit" value="Show">
+        </form>
+        <?php
+        switch ($_POST['year']) {
+            case '2014':
+                $year = 2014;
+                break;
+            case '2015':
+                $year = 2015;
+                break;
+            case '2016':
+                $year = 2016;
+                break;
+            case '2017':
+                $year = 2017;
+                break;
+            case '2018':
+                $year = 2018;
+                break;
+            case '2019':
+                $year = 2019;
+                break;
+            case '2020':
+                $year = 2020;
+                break;
+            default:
+                $year = 2014;
+                break;
         }
-        else {
-            $ctrl = 'User';
-            $action = 'login';
-        }
-        require_once('Controller/'.ucfirst($ctrl).'Controller.php');
-        $ctrl = $ctrl.'Controller';
-        $controller = new $ctrl($db);
-        $controller->$action();
-
-    ?>
-    
+        ?>
         
+        <?php
+        require('Model/Date.php');
+        $date = new Date();
+        $year = date($year);
+        // $dates = $date->getAll($year);
+        $weeks = $date->getAll($year);
+        print_r($weeks);
+        ?>
+           
     
 </body>
 </html>
