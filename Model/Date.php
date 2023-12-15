@@ -1,9 +1,11 @@
 <?php
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
+require('Model/Connection.php');
 
 class Date
 {
+
     public $months = array('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12');
     public $days = array('1', '2', '3', '4', '5', '6', '7');
     public $monthWeeks = array('1', '2', '3', '4');
@@ -38,9 +40,27 @@ class Date
                                     </td>
                                     <td>
                                         <select name="week_<?php echo $index; ?>">
-                                            <option value="1">Jordy</option>
-                                            <option value="2">Ilias</option>
-                                            <option value="2">Tumay</option>
+                                            <?php try {
+                                                // Connexion à MongoDB
+                                                $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                                                // filtre
+                                                $filter = [];
+                                                $option = [];
+                                                $read = new MongoDB\Driver\Query($filter, $option);
+                                                $all_users = $manager->executeQuery('Planning.users', $read);
+                                                ?>
+                                                <?php
+                                                foreach ($all_users as $user) { ?>
+
+                                                    <option>
+                                                        <?php echo nl2br($user->prenom); ?>
+                                                    </option>
+                                                <?php } ?>
+                                                <?php
+                                            } catch (MongoDB\Driver\ConnectionException $e) {
+                                                echo $e->getMessage();
+                                            } ?>
+
                                         </select>
                                     </td>
                                 <?php } else { ?>
