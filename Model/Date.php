@@ -16,7 +16,21 @@ class Date
             $weeks[$i] = $week_end;
             
         } 
-         echo $weeks[7];
+        ?> 
+            <form action="" method="post">
+            <?php foreach ($weeks as $week) { ?>
+                  <label for="week"><?php echo $week; ?></label>  
+                  <select name="week">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>   
+            <?php } ?>                   
+                
+                <input type="submit" name="submit" value="Submit">
+            </form>
+        <?php
+         
+        
 
         // for ($week = 1; $week <= 52; $week++) {
         //     $week_start = date('d-m-Y', strtotime($year . 'W' . str_pad($week, 2, 0, STR_PAD_LEFT)));
