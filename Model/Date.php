@@ -33,13 +33,11 @@ class Date
                             <?php for ($col = 0; $col < $columns; $col++) { ?>
                                 <?php $index = $row * $columns + $col; ?>
                                 <?php if ($index < $weeksCount) { ?>
-                                    <td>
-                                        <label for="week">
+                                    <td> 
+                                        <label for="week_<?php echo $index; ?>">
                                             <?php echo $weeks[$index]; ?>
                                         </label>
-                                    </td>
-                                    <td>
-                                        <select name="week_<?php echo $index; ?>">
+                                        <select name="week">
                                             <?php try {
                                                 // Connexion à MongoDB
                                                 $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
@@ -52,7 +50,7 @@ class Date
                                                 <?php
                                                 foreach ($all_users as $user) { ?>
 
-                                                    <option>
+                                                    <option value="<?php echo $user->_id?>">
                                                         <?php echo nl2br($user->prenom); ?>
                                                     </option>
                                                 <?php } ?>
@@ -71,10 +69,10 @@ class Date
                         </tr>
                     <?php } ?>
             </table>
-
             <input type="submit" name="submit" value="Submit">
         </form>
         <?php
+      
     }
 }
 ?>
