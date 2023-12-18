@@ -92,8 +92,22 @@ class Date
                         } catch (MongoDB\Driver\ConnectionException $e) {
                             echo $e->getMessage();
                         }
-
                         echo "</p>";
+
+                        try {
+                            $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                            echo $selectedUserId;
+                            $bulk = new MongoDB\Driver\BulkWrite;
+                            $bulk->update(
+                                ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)],
+                                ['$push' => ['dates' => $weeks[$i]]]
+                            );
+                        
+                            $result = $client->executeBulkWrite('Planning.users', $bulk);
+                            echo 'Nombre de documents modifiés : ' . $result->getModifiedCount();
+                        } catch (MongoDB\Driver\ConnectionException $e) {
+                            echo $e->getMessage();
+                        }
                     }
                 }
             }
