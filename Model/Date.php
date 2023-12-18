@@ -23,39 +23,6 @@ class Date
         $columns = 4;
         $weeksCount = count($weeks);
         $rows = ceil($weeksCount / $columns);
-
-        // Traitement du formulaire
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (isset($_POST['submit'])) {
-                echo "<p>Résultats des sélections :</p>";
-                for ($i = 0; $i < $weeksCount; $i++) {
-                    $selectedUserId = isset($_POST['week'][$i]) ? $_POST['week'][$i] : null;
-                    if ($selectedUserId !== null) {
-                        echo "<p>Semaine sélectionnée {$weeks[$i]} : ";
-
-                        try {
-                            // Connexion à MongoDB
-                            $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-                            // Filtrer l'utilisateur sélectionné
-                            $filter = ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)];
-                            $option = [];
-                            $read = new MongoDB\Driver\Query($filter, $option);
-                            $user = $manager->executeQuery('Planning.users', $read)->toArray()[0];
-
-                            // Afficher les informations de l'utilisateur
-                            echo "ID: {$selectedUserId}, Prénom: {$user->prenom}";
-
-                        } catch (MongoDB\Driver\ConnectionException $e) {
-                            echo $e->getMessage();
-                        }
-
-                        echo "</p>";
-                    }
-                }
-            }
-        }
-
-
         ?>
         <form action="" method="post">
             <table>
@@ -69,7 +36,7 @@ class Date
                                         <label for="week_<?php echo $index; ?>">
                                             <?php echo $weeks[$index]; ?>
                                         </label>
-                                        <select name="week[]">
+                                        <select name="week[<?php echo $index ?>]">
                                             <?php try {
                                                 // Connexion à MongoDB
                                                 $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
@@ -102,6 +69,36 @@ class Date
             <input type="submit" name="submit" value="Submit">
         </form>
         <?php
+           // Traitement du formulaire
+           if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['submit'])) {
+                echo "<p>Résultats des sélections :</p>";
+                for ($i = 0; $i < $weeksCount; $i++) {
+                    $selectedUserId = isset($_POST['week'][$i]) ? $_POST['week'][$i] : null;
+                    if ($selectedUserId !== null) {
+                        echo "<p>Semaine sélectionnée {$weeks[$i]} : ";
+
+                        try {
+                            // Connexion à MongoDB
+                            $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                            // Filtrer l'utilisateur sélectionné
+                            $filter = ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)];
+                            $option = [];
+                            $read = new MongoDB\Driver\Query($filter, $option);
+                            $user = $manager->executeQuery('Planning.users', $read)->toArray()[0];
+
+                            // Afficher les informations de l'utilisateur
+                            echo "ID: {$selectedUserId}, Prénom: {$user->prenom}";
+
+                        } catch (MongoDB\Driver\ConnectionException $e) {
+                            echo $e->getMessage();
+                        }
+
+                        echo "</p>";
+                    }
+                }
+            }
+        }
     }
 }
 ?>
