@@ -10,7 +10,7 @@
     <link href="View/CSS/mainSection.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-        <form action="" method="post">
+        <form action="" method="get">
         <select name="year" id="year">
             <?php
                 for ($i = 2014; $i <= 2020; $i++) {
@@ -22,7 +22,7 @@
             <input type="submit" value="Show">
         </form>
         <?php
-        switch ($_POST['year']) {
+        switch ($_GET['year']) {
             case '2014':
                 $year = 2014;
                 break;
