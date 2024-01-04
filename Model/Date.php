@@ -94,19 +94,45 @@ class Date
                         }
                         echo "</p>";
 
-                        try {
-                            $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-                            echo $selectedUserId;
-                            $bulk = new MongoDB\Driver\BulkWrite;
-                            $bulk->update(
-                                ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)],
-                                ['$push' => ['dates' => $weeks[$i]]]
-                            );
-                        
-                            $result = $client->executeBulkWrite('Planning.users', $bulk);
-                            echo 'Nombre de documents modifiés : ' . $result->getModifiedCount();
-                        } catch (MongoDB\Driver\ConnectionException $e) {
-                            echo $e->getMessage();
+                        $selectedYear = $year; // Remplacez ceci par l'année que vous voulez vérifier
+                        $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                        $startDate = new MongoDB\BSON\UTCDateTime(strtotime("$selectedYear-01-01 00:00:00") * 1000);
+                        $endDate = new MongoDB\BSON\UTCDateTime(strtotime(($selectedYear+1)."-01-01 00:00:00") * 1000);
+
+                        $query = new MongoDB\Driver\Query(['dates' => ['$gte' => $startDate, '$lt' => $endDate]]);
+                        $cursor = $client->executeQuery('Planning.users', $query);
+
+                        if($cursor !== null) {
+                            try {
+                                $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                                echo $selectedUserId;
+                                $bulk = new MongoDB\Driver\BulkWrite;
+                                $bulk->update(
+                                    ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)],
+                                    ['$push' => ['dates' => $weeks[$i]]]
+                                );
+                            
+                                $result = $client->executeBulkWrite('Planning.users', $bulk);
+                                echo 'Nombre de documents modifiés : ' . $result->getModifiedCount();
+                            } catch (MongoDB\Driver\ConnectionException $e) {
+                                echo $e->getMessage();
+                            }
+                        }
+                        else {
+                            try{
+                                $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                                $bulk = new MongoDB\Driver\BulkWrite;
+                                $bulk->update(
+                                    ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)],
+                                    ['$set' => ['dates' => $weeks[$i]]]
+                                );
+                            
+                                $result = $client->executeBulkWrite('Planning.users', $bulk);
+                                echo 'Nombre de documents modifiés : ' . $result->getModifiedCount();   
+                            }
+                            catch (MongoDB\Driver\ConnectionException $e) {
+                                echo $e->getMessage();
+                            }
                         }
                     }
                 }

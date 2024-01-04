@@ -56,7 +56,6 @@
     require('Model/Date.php');
     $date = new Date();
     $year = date($year);
-    $_SESSION['year'] = $_GET['year'];
     // $dates = $date->getAll($year);
     $weeks = $date->getAll($year);
     print_r($weeks);
