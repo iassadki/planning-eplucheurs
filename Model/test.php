@@ -1,16 +1,16 @@
 <?php
+
+use Exception;
+use MongoDB\Client;
+// Replace the placeholder with your Atlas connection string
+$uri = 'mongodb://localhost:27017';
+// Create a new client and connect to the server
+$client = new MongoDB\Client($uri);
 try {
-    // Connexion à MongoDB
-    $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-    // filtre
-    $filter = [];
-    $option = [];
-    $read = new MongoDB\Driver\Query($filter, $option);
-    $all_users = $manager->executeQuery('Planning.users', $read);
-    echo nl2br("All users => n");
-    foreach ($all_users as $user) {
-        echo nl2br(' <br> ' . $user->prenom);
-    }
-} catch (MongoDB\Driver\ConnectionException $e) {
-    echo $e->getMessage();
+    // Send a ping to confirm a successful connection
+    $client->selectDatabase('Planning')->command(['ping' => 1]);
+    echo "Pinged your deployment. You successfully connected to MongoDB!\n";
+} catch (Exception $e) {
+    print($e->getMessage());
 }
+?>

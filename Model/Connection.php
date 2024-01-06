@@ -1,4 +1,4 @@
-<!-- <?php
+<?php
 
 class Connection
 {
@@ -15,4 +15,4 @@ class Connection
     }
 }
 
-?> -->
+?>
