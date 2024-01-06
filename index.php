@@ -79,17 +79,28 @@
             <?php foreach ($all_users as $user): ?>
                 <li>
                     <?php echo nl2br($user->prenom); ?>
-                    :<?php
-                    $filter = ['_id' => new MongoDB\BSON\ObjectId($user->_id)];
-                    $option = [];
-                    $read = new MongoDB\Driver\Query($filter, $option);
-                    $user = $manager->executeQuery('Planning.users', $read)->toArray()[0];
+                    : <?php
+                    $userId = new MongoDB\BSON\ObjectId($user->_id);
+
+                    $command = new MongoDB\Driver\Command([
+                        'aggregate' => 'users',
+                        'pipeline' => [
+                            ['$match' => ['_id' => $userId]],
+                            ['$unwind' => '$dates'],
+                            ['$match' => ['dates' => ['$regex' => $year]]],
+                            ['$count' => 'count']
+                        ],
+                        'cursor' => new stdClass,
+                    ]);
+                    
+                    $result = $manager->executeCommand('Planning', $command);
+                    $resultArray = $result->toArray();
+                    
                     $count = 0;
-                    foreach ($user->dates as $date) {
-                        if (strpos($date, $year) !== false) {
-                            $count++;
-                        }
+                    if (!empty($resultArray)) {
+                        $count = current($resultArray)->count;
                     }
+                    
                     echo $count;
                     ?>
                 </li>
