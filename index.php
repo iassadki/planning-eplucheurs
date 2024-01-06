@@ -79,43 +79,29 @@
             <?php foreach ($all_users as $user): ?>
                 <li>
                     <?php echo nl2br($user->prenom); ?>
-                    :<?php
-                    $filter = ['_id' => new MongoDB\BSON\ObjectId($user->_id)];
-                    $option = [];
-                    $read = new MongoDB\Driver\Query($filter, $option);
-                    $user = $manager->executeQuery('Planning.users', $read)->toArray()[0];
+                    : <?php
+                    $userId = new MongoDB\BSON\ObjectId($user->_id);
+
+                    $command = new MongoDB\Driver\Command([
+                        'aggregate' => 'users',
+                        'pipeline' => [
+                            ['$match' => ['_id' => $userId]],
+                            ['$unwind' => '$dates'],
+                            ['$match' => ['dates' => ['$regex' => $year]]],
+                            ['$count' => 'count']
+                        ],
+                        'cursor' => new stdClass,
+                    ]);
+                    
+                    $result = $manager->executeCommand('Planning', $command);
+                    $resultArray = $result->toArray();
+                    
                     $count = 0;
-                    foreach ($user->dates as $date) {
-                        if (strpos($date, $year) !== false) {
-                            $count++;
-                        }
+                    if (!empty($resultArray)) {
+                        $count = current($resultArray)->count;
                     }
+                    
                     echo $count;
-                    ?>
-                    <?php
-                    $selectedYear = $year;
-                    // echo $selectedYear . " ";
-
-                    $startDate = new MongoDB\BSON\UTCDateTime(strtotime("$selectedYear-01-01 00:00:00") * 1000);
-                    $endDate = new MongoDB\BSON\UTCDateTime(strtotime(($selectedYear + 1) . "-01-01 00:00:00") * 1000);
-                    $query = new MongoDB\Driver\Query(['dates' => ['$gte' => $startDate, '$lt' => $endDate]]);
-                    $rows = $manager->executeQuery('Planning.users', $query);
-                    $filter = [
-                        'dates' => [
-                            '$elemMatch' => [
-                                '$gte' => new MongoDB\BSON\UTCDateTime(strtotime("$selectedYear-01-01 00:00:00") * 1000),
-                                '$lt' => new MongoDB\BSON\UTCDateTime(strtotime(($selectedYear + 1) . "-01-01 00:00:00") * 1000),         
-                            ]
-                        ]
-                    ];
-                    $option = [];
-                    $read = new MongoDB\Driver\Query($filter, $option);
-                    $all_users = $manager->executeQuery('Planning.users', $read);
-
-
-                    $count = count($user->dates);
-                    echo $count . "\n";
-
                     ?>
                 </li>
             <?php endforeach; ?>
