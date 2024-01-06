@@ -49,9 +49,11 @@ class Date
                                                 ?>
                                                 <?php
                                                 foreach ($all_users as $user) { ?>
-                                                    <option value="<?php echo $user->_id ?>">
-                                                        <?php echo nl2br($user->prenom); ?>
-                                                    </option>
+                                                    <?php if (in_array($weeks[$i], $user->dates)) { ?>
+                                                        <option value="<?php echo $user->_id; ?>" selected><?php echo $user->prenom; ?></option>
+                                                    <?php } else { ?>
+                                                        <option value="<?php echo $user->_id; ?>"><?php echo $user->prenom; ?></option>
+                                                <?php } ?>
                                                 <?php } ?>
                                                 <?php
                                             } catch (MongoDB\Driver\ConnectionException $e) {

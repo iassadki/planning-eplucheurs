@@ -127,7 +127,6 @@
             }
         }
 
-
         // Afficher les résultats
         ?>
         <ul>
@@ -147,9 +146,6 @@
         echo $e->getMessage();
     }
     ?>
-
-
-
 
 </body>
 
