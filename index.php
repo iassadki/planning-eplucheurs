@@ -69,41 +69,77 @@
         // Connexion à MongoDB
         $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
 
-        // filtre
+        // Agrégation pour obtenir les résultats triés
+        $command = new MongoDB\Driver\Command([
+            'aggregate' => 'users',
+            'pipeline' => [
+                ['$unwind' => '$dates'],
+                ['$match' => ['dates' => ['$regex' => ".*-$year"]]],
+                [
+                    '$group' => [
+                        '_id' => [
+                            '_id' => '$_id',
+                            'nom' => '$nom',
+                            'prenom' => '$prenom'
+                        ],
+                        'nbDates' => ['$sum' => 1]
+                    ]
+                ],
+                [
+                    '$project' => [
+                        '_id' => '$_id._id',   
+                        'nom' => '$_id.nom',
+                        'prenom' => '$_id.prenom',
+                        'nbDates' => '$nbDates'
+                    ]
+                ],
+                ['$sort' => ['nbDates' => -1]]
+            ],
+            'cursor' => new stdClass,
+        ]);
+
+        $result = $manager->executeCommand('Planning', $command);
+        $resultArray = $result->toArray();
+
+        // $userData = current($resultArray);
+        // Construire un tableau associatif des résultats triés
+        $sortedResults = [];
+
+        // Récupérer tous les utilisateurs
         $filter = [];
         $option = [];
         $read = new MongoDB\Driver\Query($filter, $option);
         $all_users = $manager->executeQuery('Planning.users', $read);
+
+        foreach ($all_users as $user) {
+            $sortedResults[$user->prenom] = 0;
+            foreach ($resultArray as $userData) {
+                if (!empty($resultArray)) {
+                    $fullName = $userData->prenom;
+                    $sortedResults[$fullName] = $userData->nbDates;
+    
+                    // echo $userData->prenom . " : " . $userData->nbDates;
+                } elseif (empty($resultArray)) {
+                    // echo $userData->prenom . " : " . 0;
+                    $fullName = $userData->prenom;
+                    $sortedResults[$fullName] = 0;
+                } 
+            }
+        }
+
+
+        // Afficher les résultats
         ?>
         <ul>
-            <?php foreach ($all_users as $user): ?>
-                <li>
-                    <?php echo nl2br($user->prenom); ?>
-                    : <?php
-                    $userId = new MongoDB\BSON\ObjectId($user->_id);
-
-                    $command = new MongoDB\Driver\Command([
-                        'aggregate' => 'users',
-                        'pipeline' => [
-                            ['$match' => ['_id' => $userId]],
-                            ['$unwind' => '$dates'],
-                            ['$match' => ['dates' => ['$regex' => $year]]],
-                            ['$count' => 'count']
-                        ],
-                        'cursor' => new stdClass,
-                    ]);
-                    
-                    $result = $manager->executeCommand('Planning', $command);
-                    $resultArray = $result->toArray();
-                    
-                    $count = 0;
-                    if (!empty($resultArray)) {
-                        $count = current($resultArray)->count;
-                    }
-                    
-                    echo $count;
-                    ?>
-                </li>
+            <?php foreach ($sortedResults as $fullName => $nbDates): ?>
+                <!-- Si un utilisateur n'a pas de dates, afficher quand meme 0 -->
+                <li><?php echo $fullName . " : " . $nbDates; ?></li>
+                <!-- if (!empty($resultArray)) {
+                        $userData = current($resultArray);
+                        echo $user->prenom . " : " . $userData->nbDates;
+                    } else {
+                        echo $user->prenom . " : " . 0;
+                    } -->
             <?php endforeach; ?>
         </ul>
         <?php
@@ -111,6 +147,8 @@
         echo $e->getMessage();
     }
     ?>
+
+
 
 
 </body>
