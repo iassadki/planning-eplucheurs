@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Planning Eplucheurs</title>
     <link href="View/CSS/general.css" rel="stylesheet" type="text/css">
     <link href="View/CSS/header-footer.css" rel="stylesheet" type="text/css">
     <link href="View/CSS/mainSection.css" rel="stylesheet" type="text/css">
