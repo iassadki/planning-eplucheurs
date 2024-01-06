@@ -12,7 +12,7 @@ class Date
 
     function getAll($year)
     {
-       
+
         $weeks = [];
 
         for ($i = 0; $i < 52; $i++) {
@@ -73,73 +73,53 @@ class Date
         // Traitement du formulaire
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['submit'])) {
-                echo "<p>Résultats des sélections :</p>";
+                // echo "<p>Résultats des sélections :</p>";
                 for ($i = 0; $i < $weeksCount; $i++) {
                     $selectedUserId = isset($_POST['week'][$i]) ? $_POST['week'][$i] : null;
                     if ($selectedUserId !== null) {
-                        echo "<p>Semaine sélectionnée {$weeks[$i]} : ";
-                        try {
-                            // Connexion à MongoDB
-                            $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
-                            // Filtrer l'utilisateur sélectionné
-                            $filter = ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)];
-                            $option = [];
-                            $read = new MongoDB\Driver\Query($filter, $option);
-                            $user = $manager->executeQuery('Planning.users', $read)->toArray()[0];
-
-                            // Afficher les informations de l'utilisateur
-                            echo "ID: {$selectedUserId}, Prénom: {$user->prenom}";
-
-                        } catch (MongoDB\Driver\ConnectionException $e) {
-                            echo $e->getMessage();
-                        }
-                        echo "</p>";
-
                         $selectedYear = $year; // Remplacez ceci par l'année que vous voulez vérifier
                         $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
                         $startDate = new MongoDB\BSON\UTCDateTime(strtotime("$selectedYear-01-01 00:00:00") * 1000);
-                        $endDate = new MongoDB\BSON\UTCDateTime(strtotime(($selectedYear+1)."-01-01 00:00:00") * 1000);
+                        $endDate = new MongoDB\BSON\UTCDateTime(strtotime(($selectedYear + 1) . "-01-01 00:00:00") * 1000);
 
                         $query = new MongoDB\Driver\Query(['dates' => ['$gte' => $startDate, '$lt' => $endDate]]);
                         $cursor = $client->executeQuery('Planning.users', $query);
                         $selectedYear = $year;
 
-// Trouver l'utilisateur qui a déjà la date
-$query = new MongoDB\Driver\Query(['dates' => $weeks[$i]]);
-$cursor = $client->executeQuery('Planning.users', $query);
-$existingUsers = iterator_to_array($cursor);
+                        // Trouver l'utilisateur qui a déjà la date
+                        $query = new MongoDB\Driver\Query(['dates' => $weeks[$i]]);
+                        $cursor = $client->executeQuery('Planning.users', $query);
+                        $existingUsers = iterator_to_array($cursor);
 
-if(count($existingUsers) > 0) {
-    // Supprimer la date de l'ancien utilisateur
-    try {
-        $bulk = new MongoDB\Driver\BulkWrite;
-        $bulk->update(
-            ['_id' => $existingUsers[0]->_id],
-            ['$pull' => ['dates' => $weeks[$i]]]
-        );
-        $result = $client->executeBulkWrite('Planning.users', $bulk);
-        echo 'Nombre de documents modifiés : ' . $result->getModifiedCount();
-    } catch (MongoDB\Driver\ConnectionException $e) {
-        echo $e->getMessage();
-    }
-}
+                        if (count($existingUsers) > 0) {
+                            // Supprimer la date de l'ancien utilisateur
+                            try {
+                                $bulk = new MongoDB\Driver\BulkWrite;
+                                $bulk->update(
+                                    ['_id' => $existingUsers[0]->_id],
+                                    ['$pull' => ['dates' => $weeks[$i]]]
+                                );
+                                $result = $client->executeBulkWrite('Planning.users', $bulk);
+                            } catch (MongoDB\Driver\ConnectionException $e) {
+                                echo $e->getMessage();
+                            }
+                        }
 
-// Ajouter la date au nouvel utilisateur
-try {
-    $bulk = new MongoDB\Driver\BulkWrite;
-    $bulk->update(
-        ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)],
-        ['$addToSet' => ['dates' => $weeks[$i]]]
-    );
-    $result = $client->executeBulkWrite('Planning.users', $bulk);
-    echo 'Nombre de documents modifiés : ' . $result->getModifiedCount();
-} catch (MongoDB\Driver\ConnectionException $e) {
-    echo $e->getMessage();
-}
+                        // Ajouter la date au nouvel utilisateur
+                        try {
+                            $bulk = new MongoDB\Driver\BulkWrite;
+                            $bulk->update(
+                                ['_id' => new MongoDB\BSON\ObjectId($selectedUserId)],
+                                ['$addToSet' => ['dates' => $weeks[$i]]]
+                            );
+                            $result = $client->executeBulkWrite('Planning.users', $bulk);
+                        } catch (MongoDB\Driver\ConnectionException $e) {
+                            echo $e->getMessage();
+                        }
+                    }
                 }
             }
         }
     }
-}
 }
 ?>
