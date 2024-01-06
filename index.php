@@ -79,7 +79,19 @@
             <?php foreach ($all_users as $user): ?>
                 <li>
                     <?php echo nl2br($user->prenom); ?>
-                    :
+                    :<?php
+                    $filter = ['_id' => new MongoDB\BSON\ObjectId($user->_id)];
+                    $option = [];
+                    $read = new MongoDB\Driver\Query($filter, $option);
+                    $user = $manager->executeQuery('Planning.users', $read)->toArray()[0];
+                    $count = 0;
+                    foreach ($user->dates as $date) {
+                        if (strpos($date, $year) !== false) {
+                            $count++;
+                        }
+                    }
+                    echo $count;
+                    ?>
                     <?php
                     $selectedYear = $year;
                     // echo $selectedYear . " ";
