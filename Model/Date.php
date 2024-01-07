@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
-require('Model/Connection.php');
+require('./Model/Connection.php');
 
 class Date
 {
@@ -14,6 +14,7 @@ class Date
     {
 
         $weeks = [];
+      
 
         for ($i = 0; $i < 52; $i++) {
             $week_start = date('d-m-Y', strtotime($year . 'W' . str_pad($i + 1, 2, 0, STR_PAD_LEFT)));
@@ -39,8 +40,7 @@ class Date
                                         </label>
                                         <select name="week[<?php echo $i ?>]">
                                             <?php try {
-                                                // Connexion à MongoDB
-                                                $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                                                $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
                                                 // filtre
                                                 $filter = [];
                                                 $option = [];
@@ -75,12 +75,11 @@ class Date
         // Traitement du formulaire
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['submit'])) {
-                // echo "<p>Résultats des sélections :</p>";
                 for ($i = 0; $i < $weeksCount; $i++) {
                     $selectedUserId = isset($_POST['week'][$i]) ? $_POST['week'][$i] : null;
                     if ($selectedUserId !== null) {
-                        $selectedYear = $year; // Remplacez ceci par l'année que vous voulez vérifier
-                        $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                        $selectedYear = $year; 
+                        $client = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
                         $startDate = new MongoDB\BSON\UTCDateTime(strtotime("$selectedYear-01-01 00:00:00") * 1000);
                         $endDate = new MongoDB\BSON\UTCDateTime(strtotime(($selectedYear + 1) . "-01-01 00:00:00") * 1000);
 

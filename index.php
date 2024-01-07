@@ -5,14 +5,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Planning Eplucheurs</title>
     <link href="View/CSS/general.css" rel="stylesheet" type="text/css">
     <link href="View/CSS/header-footer.css" rel="stylesheet" type="text/css">
     <link href="View/CSS/mainSection.css" rel="stylesheet" type="text/css">
 </head>
 
 <body>
-    <form action="" method="get">
+
+    <form action="" method="post">
+    <input type="email" name="email"placeholder="Mail" required/><br>
+        <input type="password" name="password"placeholder="Password" required/><br>
+        <p>
+            <input type="submit" class="submit-btn" value="Connect">
+        </p>
+    </form>
+
+    <?php
+    $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority"); // Connect to MongoDB
+
+    if (isset($_POST['email']) && isset($_POST['password'])) {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+    
+        // Create a filter for the query
+        $filter = ['email' => $email];
+        $query = new MongoDB\Driver\Query($filter);
+    
+        // Execute the query
+        $cursor = $manager->executeQuery('Planning.users', $query);
+    
+        // Get the user
+        $user = current($cursor->toArray());
+        // If a user was found and the password is correct
+        if ($user && password_verify($password, $user->mdp)) {
+            ?>
+                <form action="" method="get">
         <select name="year" id="year">
             <?php
             for ($i = 2014; $i <= 2020; $i++) {
@@ -53,10 +81,10 @@
     ?>
 
     <?php
-    require('Model/Date.php');
+    require('./Model/Date.php');
     $date = new Date();
+    echo "test";
     $year = date($year);
-    // $dates = $date->getAll($year);
     $weeks = $date->getAll($year);
     print_r($weeks);
     ?>
@@ -67,7 +95,7 @@
     <?php
     try {
         // Connexion à MongoDB
-        $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
 
         // Agrégation pour obtenir les résultats triés
         $command = new MongoDB\Driver\Command([
@@ -93,7 +121,7 @@
                         'nbDates' => '$nbDates'
                     ]
                 ],
-                ['$sort' => ['nbDates' => -1]]
+                ['$sort' => ['nbDates' => 1]]
             ],
             'cursor' => new stdClass,
         ]);
@@ -101,44 +129,25 @@
         $result = $manager->executeCommand('Planning', $command);
         $resultArray = $result->toArray();
 
-        // $userData = current($resultArray);
-        // Construire un tableau associatif des résultats triés
         $sortedResults = [];
-
-        // Récupérer tous les utilisateurs
         $filter = [];
         $option = [];
         $read = new MongoDB\Driver\Query($filter, $option);
         $all_users = $manager->executeQuery('Planning.users', $read);
 
         foreach ($all_users as $user) {
-            $sortedResults[$user->prenom] = 0;
             foreach ($resultArray as $userData) {
                 if (!empty($resultArray)) {
                     $fullName = $userData->prenom;
-                    $sortedResults[$fullName] = $userData->nbDates;
-    
-                    // echo $userData->prenom . " : " . $userData->nbDates;
-                } elseif (empty($resultArray)) {
-                    // echo $userData->prenom . " : " . 0;
-                    $fullName = $userData->prenom;
-                    $sortedResults[$fullName] = 0;
-                } 
+                    $sortedResults[$fullName] = $userData->nbDates;    
+                }  
             }
         }
-
-        // Afficher les résultats
         ?>
+        
         <ul>
             <?php foreach ($sortedResults as $fullName => $nbDates): ?>
-                <!-- Si un utilisateur n'a pas de dates, afficher quand meme 0 -->
                 <li><?php echo $fullName . " : " . $nbDates; ?></li>
-                <!-- if (!empty($resultArray)) {
-                        $userData = current($resultArray);
-                        echo $user->prenom . " : " . $userData->nbDates;
-                    } else {
-                        echo $user->prenom . " : " . 0;
-                    } -->
             <?php endforeach; ?>
         </ul>
         <?php
@@ -146,6 +155,22 @@
         echo $e->getMessage();
     }
     ?>
+            <?php
+            
+        } 
+            else {
+                // Debug: print the entered password and the hashed password
+                echo "Entered password: $password\n";
+                echo "Hashed password: " . $user->mdp . "\n";
+                echo "invalid email or password";
+            }
+        
+    }
+    ?>
+
+
+
+    
 
 </body>
 
