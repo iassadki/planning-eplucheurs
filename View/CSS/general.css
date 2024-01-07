@@ -58,7 +58,7 @@ margin-25 {
 
 /*General*/
 body {
-    background-color: #e8e8e8;
+    background-color: #f0f0f0;
     min-height: 100%;
     margin: 0;
     font-family: 'Source Sans Pro', sans-serif;
@@ -123,15 +123,16 @@ h1 {
 table {
     margin: auto;
     margin-bottom: 50px;
-    background-color: #fff;
-    border-collapse: collapse
+    background-color: #FFFFFF;
+    border-collapse: collapse;
 }
 
-table td,
+ table td,
 table th {
-    padding: 5px 15px;
-    border: 1px solid #777;
-}
+    padding: 10px 10px;
+    border: 1px solid #000000;
+    width: 300px;
+} 
 
 /* Wrappers */
 .wrapper-90 {

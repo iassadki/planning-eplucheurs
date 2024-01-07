@@ -59,5 +59,7 @@
                 </tr>
             <?php } ?>
     </table>
-    <input type="submit" name="submit" value="Submit">
+    <center>
+        <input type="submit" class="submit-btn" name="submit" value="Submit">
+    </center>
 </form>
