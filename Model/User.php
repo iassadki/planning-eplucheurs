@@ -1,7 +1,9 @@
 <?php 
-include_once('Model/Connection.php');
+// include_once('Model/Connection.php');
+require_once 'Connection.php';
 
-    class User{
+
+class User{
         private int $_id;
         private string $nom;
         private string $prenom;
