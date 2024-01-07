@@ -22,8 +22,8 @@
     </form>
 
     <?php
-    $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority"); // Connect to MongoDB
-
+    //$manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority"); // Connect to MongoDB
+    $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
     if (isset($_POST['email']) && isset($_POST['password'])) {
         $email = $_POST['email'];
         $password = $_POST['password'];
@@ -95,8 +95,8 @@
     <?php
     try {
         // Connexion à MongoDB
-        $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
-
+        //$manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
+        $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
         // Agrégation pour obtenir les résultats triés
         $command = new MongoDB\Driver\Command([
             'aggregate' => 'users',
