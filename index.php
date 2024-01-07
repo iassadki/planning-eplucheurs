@@ -55,6 +55,7 @@
     <?php
     require('./Model/Date.php');
     $date = new Date();
+    echo "test";
     $year = date($year);
     $weeks = $date->getAll($year);
     print_r($weeks);
@@ -64,8 +65,67 @@
 
     <!-- Afficher les prenoms depuis la base de données MongoDB -->
     <?php
-    require('./Model/Date.php');
-    displayStatistics($year);
+    try {
+        // Connexion à MongoDB
+        $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
+
+        // Agrégation pour obtenir les résultats triés
+        $command = new MongoDB\Driver\Command([
+            'aggregate' => 'users',
+            'pipeline' => [
+                ['$unwind' => '$dates'],
+                ['$match' => ['dates' => ['$regex' => ".*-$year"]]],
+                [
+                    '$group' => [
+                        '_id' => [
+                            '_id' => '$_id',
+                            'nom' => '$nom',
+                            'prenom' => '$prenom'
+                        ],
+                        'nbDates' => ['$sum' => 1]
+                    ]
+                ],
+                [
+                    '$project' => [
+                        '_id' => '$_id._id',   
+                        'nom' => '$_id.nom',
+                        'prenom' => '$_id.prenom',
+                        'nbDates' => '$nbDates'
+                    ]
+                ],
+                ['$sort' => ['nbDates' => 1]]
+            ],
+            'cursor' => new stdClass,
+        ]);
+
+        $result = $manager->executeCommand('Planning', $command);
+        $resultArray = $result->toArray();
+
+        $sortedResults = [];
+        $filter = [];
+        $option = [];
+        $read = new MongoDB\Driver\Query($filter, $option);
+        $all_users = $manager->executeQuery('Planning.users', $read);
+
+        foreach ($all_users as $user) {
+            foreach ($resultArray as $userData) {
+                if (!empty($resultArray)) {
+                    $fullName = $userData->prenom;
+                    $sortedResults[$fullName] = $userData->nbDates;    
+                }  
+            }
+        }
+        ?>
+        
+        <ul>
+            <?php foreach ($sortedResults as $fullName => $nbDates): ?>
+                <li><?php echo $fullName . " : " . $nbDates; ?></li>
+            <?php endforeach; ?>
+        </ul>
+        <?php
+    } catch (MongoDB\Driver\ConnectionException $e) {
+        echo $e->getMessage();
+    }
     ?>
 
 </body>
