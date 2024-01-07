@@ -4,13 +4,13 @@ class UserController {
     private $userManager;
 
     public function __construct($db1) {
-        require_once ('../Model/UserManager.php');
+        require_once ('./Model/UserManager.php');
         $this->userManager = new UserManager($db1);
     }
 
     public function login() {
         $page = 'login';
-        require('../View/default.php');
+        require('./View/default.php');
     }
 
     public function doLogin() {
@@ -34,7 +34,7 @@ class UserController {
             }
             
         }
-        require('../View/default.php');    
+        require('./View/default.php');    
     }
 
 }
