@@ -40,7 +40,7 @@ class Date
                                         </label>
                                         <select name="week[<?php echo $i ?>]">
                                             <?php try {
-                                                $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                                                $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
                                                 // filtre
                                                 $filter = [];
                                                 $option = [];
@@ -79,7 +79,7 @@ class Date
                     $selectedUserId = isset($_POST['week'][$i]) ? $_POST['week'][$i] : null;
                     if ($selectedUserId !== null) {
                         $selectedYear = $year; 
-                        $client = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                        $client = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
                         $startDate = new MongoDB\BSON\UTCDateTime(strtotime("$selectedYear-01-01 00:00:00") * 1000);
                         $endDate = new MongoDB\BSON\UTCDateTime(strtotime(($selectedYear + 1) . "-01-01 00:00:00") * 1000);
 

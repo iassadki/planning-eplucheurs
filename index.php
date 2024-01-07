@@ -55,6 +55,7 @@
     <?php
     require('./Model/Date.php');
     $date = new Date();
+    echo "test";
     $year = date($year);
     $weeks = $date->getAll($year);
     print_r($weeks);
@@ -66,7 +67,7 @@
     <?php
     try {
         // Connexion à MongoDB
-        $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+        $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
 
         // Agrégation pour obtenir les résultats triés
         $command = new MongoDB\Driver\Command([
