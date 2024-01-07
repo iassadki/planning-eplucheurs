@@ -26,7 +26,11 @@ class UserManager{
         public function getAllUser(){
             $this->connection = new Connection();
             $manager = $this->connection->getManager();
-            
+            $filter = [];
+            $option = [];
+            $read = new MongoDB\Driver\Query($filter, $option);
+            $all_users = $manager->executeQuery('Planning.users', $read);
+            return $all_users;
         }
 
         public function getEmail($user){
@@ -47,16 +51,6 @@ class UserManager{
             $query = new MongoDB\Driver\Query($filter, $options);
             $result = $manager->executeQuery('Planning.users', $query);
             return $result->toArray()[0]->mdp;
-        }
-
-        public function getDates($user){
-            $this->connection = new Connection();
-            $manager = $this->connection->getManager();
-            $filter = ['dates' => $this->dates];
-            $options = [];
-            $query = new MongoDB\Driver\Query($filter, $options);
-            $result = $manager->executeQuery('Planning.users', $query);
-            return $result->toArray()[0]->dates;
         }
 
         public function login($user, $password){
