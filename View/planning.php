@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="fr">
-<body>
-
-<center><h1><b>Date<b></h1></center>
-        
-<p> <?php getAllDates() ?> </p>
-
-</body>
-</html>
+<select name="year" id="year">
+<form action="" method="get">
+    <select name="year" id="year">
+        <?php
+        for ($i = 2014; $i <= 2020; $i++) {
+            $selected = ($i == $year) ? 'selected' : '';
+            echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+        }
+        ?>
+    </select>
+    <input type="submit" value="Show">
+</form>
