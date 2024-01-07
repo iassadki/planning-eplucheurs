@@ -13,6 +13,11 @@ class Connection
             echo $e->getMessage(), "\n";
         }
     }
+
+    public function getManager()
+    {
+        return $this->manager;
+    }
 }
 
 ?>
