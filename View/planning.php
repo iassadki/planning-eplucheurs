@@ -1,4 +1,4 @@
-<form action="index.php?ctrl=User&action=choseYear" method="get">
+<form action="index.php?ctrl=User&action=choseYear" method="POST">
     <select name="year" id="year">
         <?php
             for ($i = 2014; $i <= 2020; $i++) {
