@@ -10,7 +10,7 @@
     <input type="submit" value="Show">
 </form>
 
-<form action="" method="post">
+<form action="index.php?ctrl=Date&action=sendDates" method="POST">
     <table>
         <?php 
         require_once('./Model/DateManager.php');
