@@ -12,7 +12,35 @@
 </head>
 
 <body>
-    <form action="" method="get">
+
+    <form action="" method="post">
+    <input type="email" name="email"placeholder="Mail" required/><br>
+        <input type="password" name="password"placeholder="Password" required/><br>
+        <p>
+            <input type="submit" class="submit-btn" value="Connect">
+        </p>
+    </form>
+
+    <?php
+    $manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority"); // Connect to MongoDB
+
+    if (isset($_POST['email']) && isset($_POST['password'])) {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+    
+        // Create a filter for the query
+        $filter = ['email' => $email];
+        $query = new MongoDB\Driver\Query($filter);
+    
+        // Execute the query
+        $cursor = $manager->executeQuery('Planning.users', $query);
+    
+        // Get the user
+        $user = current($cursor->toArray());
+        // If a user was found and the password is correct
+        if ($user && password_verify($password, $user->mdp)) {
+            ?>
+                <form action="" method="get">
         <select name="year" id="year">
             <?php
             for ($i = 2014; $i <= 2020; $i++) {
@@ -127,6 +155,22 @@
         echo $e->getMessage();
     }
     ?>
+            <?php
+            
+        } 
+            else {
+                // Debug: print the entered password and the hashed password
+                echo "Entered password: $password\n";
+                echo "Hashed password: " . $user->mdp . "\n";
+                echo "invalid email or password";
+            }
+        
+    }
+    ?>
+
+
+
+    
 
 </body>
 
