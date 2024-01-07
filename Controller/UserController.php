@@ -39,7 +39,8 @@ class UserController {
 
     public function choseYear() {
         // Cette action permet de choisir l'année du planning à afficher
-        switch ($_GET['year']) {
+        $page = 'planning';
+        switch ($_POST['year']) {
             case '2014':
                 $year = 2014;
                 break;
@@ -65,7 +66,6 @@ class UserController {
                 $year = 2014;
                 break;
         }
-        $page = 'planning';
         require('./View/default.php');
     }
 
