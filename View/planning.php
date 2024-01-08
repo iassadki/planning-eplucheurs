@@ -7,7 +7,7 @@
     $date = $dateManager->getAll($year);
     $userManager = new UserManager($db1);
 ?>
-
+<a href="index.php?ctrl=User&action=logout" method="POST" style="display:block; text-align: center;">Deconnexion</a>
 <form action="index.php?ctrl=Date&action=choseYear" method="POST">
     <center>
         <select name="year" id="year" class="selectDates">
