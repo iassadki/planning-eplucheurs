@@ -148,11 +148,8 @@ table th {
 .form textarea,
 option,
 select,
-.form input[type="text"],
 .form input[type="password"],
-.form input[type="email"],
-.form input[type="file"],
-.form input[type="number"] {
+.form input[type="email"] {
     width: 60%;
     padding: 5px 15px;
     margin-bottom: 10px;
@@ -162,22 +159,6 @@ select,
     border-radius: 2px;
     border: 1px solid #a4a4a4;
     color: #333;
-}
-
-.form textarea:focus,
-option,
-select,
-.form input[type="text"]:focus,
-.form input[type="password"]:focus,
-.form input[type="email"]:focus,
-.form input[type="file"]:focus,
-.form input[type="number"]:focus {
-    border: 1px solid #707070;
-}
-
-.form textarea {
-    resize: vertical;
-    height: 150px;
 }
 
 option,
