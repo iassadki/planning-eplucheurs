@@ -126,7 +126,7 @@ table th {
 }
 
 /* Wrappers */
-.wrapper-90 {
+/* .wrapper-90 {
     width: 90%;
     padding: 10px;
 }
@@ -134,7 +134,7 @@ table th {
 .wrapper-50 {
     width: 50%;
     padding: 10px;
-}
+} */
 
 /* Forms */
 .form textarea,
