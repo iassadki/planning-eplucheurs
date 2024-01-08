@@ -1,18 +1,20 @@
 <form action="index.php?ctrl=Date&action=choseYear" method="POST">
-    <select name="year" id="year">
-        <?php
+    <center>
+        <select name="year" id="year" class="selectDates">
+            <?php
             for ($i = 2014; $i <= 2020; $i++) {
                 $selected = ($i == $year) ? 'selected' : '';
                 echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
             }
-        ?>
-    </select>
-    <input type="submit" value="Show">
+            ?>
+        </select>
+        <input type="submit" value="Show">
+    </center>
 </form>
 
 <form action="index.php?ctrl=Date&action=sendDates" method="POST">
     <table>
-        <?php 
+        <?php
         require_once('./Model/DateManager.php');
         require_once('./Model/UserManager.php');
 
@@ -21,7 +23,7 @@
         $dateManager = new DateManager($db1);
         $date = $dateManager->getAll($year);
 
-       $weeks = $date['weeks'];
+        $weeks = $date['weeks'];
         for ($row = 0; $row < $date['rows']; $row++) { ?>
             <tbody>
                 <tr>
@@ -40,10 +42,14 @@
                                         <?php
                                         foreach ($all_users as $user) { ?>
                                             <?php if (in_array($weeks[$i], $user->dates)) { ?>
-                                                <option value="<?php echo $user->_id; ?>" selected><?php echo $user->prenom; ?></option>
+                                                <option value="<?php echo $user->_id; ?>" selected>
+                                                    <?php echo $user->prenom; ?>
+                                                </option>
                                             <?php } else { ?>
-                                                <option value="<?php echo $user->_id; ?>"><?php echo $user->prenom; ?></option>
-                                        <?php } ?>
+                                                <option value="<?php echo $user->_id; ?>">
+                                                    <?php echo $user->prenom; ?>
+                                                </option>
+                                            <?php } ?>
                                         <?php } ?>
                                         <?php
                                     } catch (MongoDB\Driver\ConnectionException $e) {

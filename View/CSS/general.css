@@ -85,6 +85,11 @@ h1 {
     font-size: 2em;
 }
 
+.selectDates {
+    width: 250px;
+    margin-top: 10px;
+}
+
 /* Buttons */
 .submit-btn {
     padding: 10px 20px;
