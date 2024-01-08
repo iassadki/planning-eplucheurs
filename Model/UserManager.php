@@ -74,5 +74,70 @@ class UserManager{
                 return null;
             }
         }
+
+        public function getStats(){
+            try {
+                // Connexion à MongoDB
+                //$manager = new MongoDB\Driver\Manager("mongodb+srv://test:test@cluster0.63c2egn.mongodb.net/?retryWrites=true&w=majority");
+                $manager = new MongoDB\Driver\Manager("mongodb://localhost:27017");
+                $year = $_SESSION["year"];
+                // Agrégation pour obtenir les résultats triés
+                $command = new MongoDB\Driver\Command([
+                    'aggregate' => 'users',
+                    'pipeline' => [
+                        ['$unwind' => '$dates'],
+                        ['$match' => ['dates' => ['$regex' => ".*-$year"]]],
+                        [
+                            '$group' => [
+                                '_id' => [
+                                    '_id' => '$_id',
+                                    'nom' => '$nom',
+                                    'prenom' => '$prenom'
+                                ],
+                                'nbDates' => ['$sum' => 1]
+                            ]
+                        ],
+                        [
+                            '$project' => [
+                                '_id' => '$_id._id',   
+                                'nom' => '$_id.nom',
+                                'prenom' => '$_id.prenom',
+                                'nbDates' => '$nbDates'
+                            ]
+                        ],
+                        ['$sort' => ['nbDates' => 1]]
+                    ],
+                    'cursor' => new stdClass,
+                ]);
+        
+                $result = $manager->executeCommand('Planning', $command);
+                $resultArray = $result->toArray();
+        
+                $sortedResults = [];
+                $filter = [];
+                $option = [];
+                $read = new MongoDB\Driver\Query($filter, $option);
+                $all_users = $manager->executeQuery('Planning.users', $read);
+        
+                foreach ($all_users as $user) {
+                    foreach ($resultArray as $userData) {
+                        if (!empty($resultArray)) {
+                            $fullName = $userData->prenom;
+                            $sortedResults[$fullName] = $userData->nbDates;    
+                        }  
+                    }
+                }
+                ?>
+                
+                <ul>
+                    <?php foreach ($sortedResults as $fullName => $nbDates): ?>
+                        <li><?php echo $fullName . " : " . $nbDates; ?></li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php
+            } catch (MongoDB\Driver\ConnectionException $e) {
+                echo $e->getMessage();
+            }
+        }
     }
 ?>

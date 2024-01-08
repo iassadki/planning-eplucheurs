@@ -1,3 +1,13 @@
+<?php
+    require_once('./Model/DateManager.php');
+    require_once('./Model/UserManager.php');
+    $pdoBuilder = new Connection();
+    $db1 = $pdoBuilder->getManager();
+    $dateManager = new DateManager($db1);
+    $date = $dateManager->getAll($year);
+    $userManager = new UserManager($db1);
+?>
+
 <form action="index.php?ctrl=Date&action=choseYear" method="POST">
     <center>
         <select name="year" id="year" class="selectDates">
@@ -15,13 +25,7 @@
 <form action="index.php?ctrl=Date&action=sendDates" method="POST">
     <table>
         <?php
-        require_once('./Model/DateManager.php');
-        require_once('./Model/UserManager.php');
-
-        $pdoBuilder = new Connection();
-        $db1 = $pdoBuilder->getManager();
-        $dateManager = new DateManager($db1);
-        $date = $dateManager->getAll($year);
+        
 
         $weeks = $date['weeks'];
         for ($row = 0; $row < $date['rows']; $row++) { ?>
@@ -36,7 +40,7 @@
                                 </label>
                                 <select name="week[<?php echo $i ?>]">
                                     <?php try {
-                                        $userManager = new UserManager($db1);
+                                        
                                         $all_users = $userManager->getAllUser();
                                         ?>
                                         <?php
@@ -69,3 +73,9 @@
         <input type="submit" class="submit-btn" name="submit" value="Submit">
     </center>
 </form>
+
+
+<h2>Statistiques par ordre croissant</h2>
+<?php
+    $userManager->getStats();
+?>
